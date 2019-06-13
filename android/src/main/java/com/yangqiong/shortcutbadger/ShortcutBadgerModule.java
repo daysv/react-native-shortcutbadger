@@ -6,6 +6,8 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Callback;
+import android.content.SharedPreferences;
+import android.content.Context;
 
 import me.leolin.shortcutbadger.ShortcutBadger;
 
@@ -14,12 +16,14 @@ import me.leolin.shortcutbadger.ShortcutBadger;
  */
 public class ShortcutBadgerModule extends ReactContextBaseJavaModule {
     static ReactApplicationContext context;
-    static int count;
+    private SharedPreferences mPrefs;
+    private static final String BADGE_FILE = "BadgeCountFile";
+    private static final String BADGE_KEY = "BadgeCount";
 
     public ShortcutBadgerModule(ReactApplicationContext reactContext){
         super(reactContext);
         context = reactContext;
-        count = 0;
+        mPrefs = reactContext.getSharedPreferences(BADGE_FILE, Context.MODE_PRIVATE);
     }
 
     @Override
@@ -30,7 +34,7 @@ public class ShortcutBadgerModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void applyCount(int badgeCount){
         if (context != null){
-            count = badgeCount;
+            mPrefs.edit().putInt(BADGE_KEY, badgeCount).apply();
             ShortcutBadger.applyCount(context, badgeCount);
         }
     }
@@ -38,13 +42,13 @@ public class ShortcutBadgerModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void removeCount(){
         if (context != null){
-            count = 0;
+            mPrefs.edit().putInt(BADGE_KEY, 0).apply();
             ShortcutBadger.removeCount(context);
         }
     }
 
     @ReactMethod
     public void getCount(Callback callback){
-      callback.invoke(count);
+      callback.invoke(mPrefs.getInt(BADGE_KEY, 0));
     }
 }
