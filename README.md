@@ -50,4 +50,5 @@ const ShortcutBadger = NativeModules.ShortcutBadger;
 int count = 1;
 ShortcutBadger.applyCount(count);
 ShortcutBadger.removeCount();
+ShortcutBadger.getCount((count) => {});
 ```
